@@ -1,196 +1,144 @@
-═══════════════════════════════════════════════════════════════
-                        FORGE TRIALS
-              DOC 8 — DASHBOARD HTML v2.1
-              [Plantilla Visual — Entregable de Noche]
-═══════════════════════════════════════════════════════════════
-
-PROPÓSITO
-─────────
-Este documento contiene la plantilla HTML del dashboard visual
-de FORGE TRIALS. El Arquitecto la usa para generar el entregable
-de la Sesión de Noche con los datos actualizados del día.
-
-CUÁNDO ENTREGAR:
-→ SOLO en la Sesión 3 (Noche), al cierre del día.
-→ Nunca en la mañana ni en la tarde.
-→ Siempre después de calcular todos los stats del día.
-
-CÓMO ACTUALIZAR:
-→ Tomar la plantilla completa de abajo.
-→ Reemplazar ÚNICAMENTE los valores dentro del objeto DATA {}.
-→ No modificar ninguna otra parte del código.
-→ Entregar el HTML completo al jugador.
-
-═══════════════════════════════════════════════════════════════
-REFERENCIA DE VARIABLES DATA
-═══════════════════════════════════════════════════════════════
-
-Actualiza estos valores con los datos reales del jugador:
-
-  playerName    → Nombre del jugador
-  rank          → Rango actual (APRENDIZ, GUERRERO, etc.)
-  rankSub       → Material del rango (PIEDRA, HIERRO, etc.)
-
-  vitalidad     → LIQUIDEZ_HOY - COMPROMISOS_7D (resultado en $)
-  vitalidadMax  → INGRESO_MENSUAL (como referencia de escala)
-  stamina       → Horas libres del día (número)
-  staminaMax    → 24 - (trabajo + sueño + rutina) máximo histórico
-
-  misionesHoy   → Misiones completadas hoy (número)
-  misionesTot   → Misiones asignadas hoy (número)
-
-  vidas         → Vidas actuales (1-5)
-  freezes       → Freezes disponibles (0-2)
-
-  momentum      → Días consecutivos de MOMENTUM activo
-
-  poder         → INGRESO_MENSUAL / (HORAS_TRABAJO × 22)
-  defensa       → AHORRO_TOTAL / GASTO_MENSUAL
-  impulso       → INGRESO_MENSUAL - GASTO_MENSUAL
-
-  nivel         → Nivel actual (1-10)
-  levelName     → Descripción del nivel ("APRENDIZ → GUERRERO")
-  levelPct      → % de progreso en el nivel actual (0-100)
-
-═══════════════════════════════════════════════════════════════
-PLANTILLA HTML COMPLETA
-(Entregar esto al jugador cada noche con DATA actualizado)
-═══════════════════════════════════════════════════════════════
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FORGE TRIALS | System Link</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:#05050a;--bg2:#0a0a12;--bg3:#0f0f1a;--border:#1e1e2e;--border2:#2a2a3e;
-    --gold:#c9a84c;--gold2:#e8c96a;--red:#c0392b;--red2:#e74c3c;
-    --green:#1a7a4a;--green2:#27ae60;--cyan:#0e7a8c;--cyan2:#1abc9c;
-    --purple:#6c3483;--purple2:#9b59b6;--orange:#d35400;--orange2:#e67e22;
-    --text:#c8c8d8;--text2:#888899;--text3:#555566;--white:#eeeeff;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;position:relative;}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(100,60,20,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(30,20,60,0.12) 0%,transparent 60%),repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.01) 2px,rgba(255,255,255,0.01) 4px);pointer-events:none;z-index:0;}
-  .container{max-width:1100px;margin:0 auto;padding:24px 20px;position:relative;z-index:1;}
-  .header{text-align:center;padding:32px 0 24px;position:relative;}
-  .header::after{content:'';display:block;width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0;}
-  .system-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:6px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;animation:blink 3s infinite;}
-  @keyframes blink{0%,90%,100%{opacity:1;}95%{opacity:0.3;}}
-  .game-title{font-family:'Cinzel',serif;font-size:clamp(36px,7vw,72px);font-weight:900;letter-spacing:12px;color:var(--gold);text-shadow:0 0 40px rgba(201,168,76,0.4),0 0 80px rgba(201,168,76,0.15);line-height:1;}
-  .player-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:300;letter-spacing:8px;color:var(--text2);margin-top:10px;text-transform:uppercase;}
-  .rank-badge{display:inline-block;margin-top:14px;padding:5px 20px;border:1px solid var(--gold);font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:var(--gold2);background:rgba(201,168,76,0.06);text-transform:uppercase;}
-  .grid-main{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
-  .grid-full{grid-column:1 / -1;}
-  @media(max-width:700px){.grid-main{grid-template-columns:1fr;}.grid-full{grid-column:1;}}
-  .panel{background:var(--bg2);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;}
-  .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);}
-  .panel-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-  .panel-title::after{content:'';flex:1;height:1px;background:var(--border2);}
-  .stat-row{margin-bottom:18px;}.stat-row:last-child{margin-bottom:0;}
-  .stat-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
-  .stat-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;}
-  .stat-value{font-family:'Share Tech Mono',monospace;font-size:13px;}
-  .bar-track{height:6px;background:var(--bg3);border:1px solid var(--border);position:relative;overflow:hidden;}
-  .bar-fill{height:100%;position:relative;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
-  .bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:3px;background:rgba(255,255,255,0.6);filter:blur(2px);}
-  .bar-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.12) 50%,transparent 100%);animation:shimmer 2.5s infinite;}
-  @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
-  .bar-green{background:linear-gradient(90deg,var(--green),var(--green2));}
-  .bar-orange{background:linear-gradient(90deg,var(--orange),var(--orange2));}
-  .bar-red{background:linear-gradient(90deg,var(--red),var(--red2));animation:pulse-red 1.5s infinite;}
-  .bar-cyan{background:linear-gradient(90deg,var(--cyan),var(--cyan2));}
-  .bar-gold{background:linear-gradient(90deg,#7a5c20,var(--gold2));}
-  @keyframes pulse-red{0%,100%{opacity:1;}50%{opacity:0.6;}}
-  .stat-status{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;margin-top:4px;}
-  .lives-container{display:flex;gap:8px;align-items:center;margin-top:4px;}
-  .heart{font-size:20px;transition:all 0.3s;filter:drop-shadow(0 0 6px rgba(192,57,43,0.6));}
-  .heart.empty{filter:none;opacity:0.2;}
-  .heart-anim{animation:heartbeat 1.5s ease-in-out infinite;}
-  @keyframes heartbeat{0%,100%{transform:scale(1);}14%{transform:scale(1.15);}28%{transform:scale(1);}42%{transform:scale(1.08);}70%{transform:scale(1);}}
-  .momentum-block{text-align:center;padding:20px;background:var(--bg3);border:1px solid var(--border2);position:relative;overflow:hidden;}
-  .momentum-block::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(201,168,76,0.06) 0%,transparent 70%);}
-  .momentum-number{font-family:'Cinzel',serif;font-size:64px;font-weight:900;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(201,168,76,0.5);position:relative;}
-  .momentum-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:6px;color:var(--text3);margin-top:6px;text-transform:uppercase;}
-  .momentum-state{margin-top:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:4px;color:var(--gold2);}
-  .flames{font-size:22px;margin-top:6px;}
-  .char-stat{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-  .char-stat:last-child{border-bottom:none;}
-  .char-icon{font-size:20px;width:32px;text-align:center;}
-  .char-stat-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text2);}
-  .char-stat-desc{font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px;}
-  .char-stat-value{font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;text-align:right;white-space:nowrap;}
-  .char-stat-unit{font-size:10px;color:var(--text3);text-align:right;letter-spacing:1px;}
-  .level-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-  .level-num{font-family:'Cinzel',serif;font-size:28px;font-weight:900;color:var(--gold);}
-  .level-pct{font-family:'Share Tech Mono',monospace;font-size:24px;color:var(--text2);}
-  .level-name{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:11px;letter-spacing:5px;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
-  .progress-track{height:8px;background:var(--bg3);border:1px solid var(--border2);position:relative;margin-bottom:16px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold) 0%,var(--gold2) 100%);position:relative;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);}
-  .progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:white;filter:blur(3px);opacity:0.8;}
-  .progress-glow{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.08) 50%,transparent 100%);animation:shimmer 2s infinite;}
-  .objective{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
-  .objective:last-child{border-bottom:none;}
-  .obj-icon{font-size:14px;margin-top:1px;flex-shrink:0;}
-  .obj-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:1px;flex:1;line-height:1.3;}
-  .obj-pct{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text3);flex-shrink:0;}
-  .obj-bar{height:3px;background:var(--bg3);margin-top:6px;}
-  .obj-bar-fill{height:100%;background:var(--gold);opacity:0.7;}
-  .obj-complete .obj-name{color:var(--green2);}
-  .obj-complete .obj-bar-fill{background:var(--green2);opacity:1;}
-  .obj-active .obj-name{color:var(--white);}
-  .obj-locked .obj-name{color:var(--text3);}
-  .mission{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-  .mission:last-child{border-bottom:none;}
-  .mission-check{width:18px;height:18px;border:1px solid var(--border2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:11px;}
-  .mission-check.done{background:rgba(39,174,96,0.15);border-color:var(--green2);color:var(--green2);}
-  .mission-body{flex:1;}
-  .mission-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;line-height:1.3;}
-  .mission-name.done{color:var(--text3);text-decoration:line-through;text-decoration-color:var(--green2);}
-  .mission-sub{font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:3px;}
-  .mission-time{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);flex-shrink:0;margin-top:2px;}
-  .wp-gauge{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg3);border:1px solid var(--border2);}
-  .wp-circle{position:relative;width:70px;height:70px;flex-shrink:0;}
-  .wp-circle svg{transform:rotate(-90deg);width:70px;height:70px;}
-  .wp-circle-bg{fill:none;stroke:var(--border2);stroke-width:5;}
-  .wp-circle-fill{fill:none;stroke:var(--gold2);stroke-width:5;stroke-linecap:butt;stroke-dasharray:189.6;stroke-dashoffset:56.88;transition:stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);filter:drop-shadow(0 0 4px rgba(232,201,106,0.6));}
-  .wp-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:var(--gold2);}
-  .wp-info{flex:1;}
-  .wp-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
-  .wp-state{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;color:var(--gold2);}
-  .wp-tasks{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);margin-top:4px;}
-  .freeze-row{display:flex;gap:8px;align-items:center;margin-top:12px;}
-  .freeze-icon{font-size:18px;opacity:0.8;}
-  .freeze-icon.empty{opacity:0.15;}
-  .freeze-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text3);margin-left:4px;}
-  .session-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);margin-bottom:16px;}
-  .session-date{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:2px;}
-  .session-online{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green2);}
-  .dot-pulse{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:dot-pulse 2s infinite;}
-  @keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
-  .impulso-indicator{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;}
-  .impulso-pos{border-color:var(--green2);color:var(--green2);background:rgba(39,174,96,0.06);}
-  .impulso-neg{border-color:var(--red2);color:var(--red2);background:rgba(192,57,43,0.06);animation:pulse-red 2s infinite;}
-  .footer{text-align:center;padding:30px 0 16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--text3);}
-  .footer::before{content:'';display:block;width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 auto 20px;}
-  .divider{display:flex;align-items:center;gap:12px;margin:20px 0 16px;}
-  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-  .divider-text{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:5px;color:var(--text3);text-transform:uppercase;white-space:nowrap;}
-  .fade-in{opacity:0;transform:translateY(12px);animation:fadeUp 0.6s ease forwards;}
-  @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
-  .delay-1{animation-delay:0.1s;}.delay-2{animation-delay:0.2s;}.delay-3{animation-delay:0.3s;}.delay-4{animation-delay:0.4s;}.delay-5{animation-delay:0.5s;}.delay-6{animation-delay:0.6s;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORGE TRIALS | System Link</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:#05050a;--bg2:#0a0a12;--bg3:#0f0f1a;--border:#1e1e2e;--border2:#2a2a3e;
+            --gold:#c9a84c;--gold2:#e8c96a;--red:#c0392b;--red2:#e74c3c;
+            --green:#1a7a4a;--green2:#27ae60;--cyan:#0e7a8c;--cyan2:#1abc9c;
+            --purple:#6c3483;--purple2:#9b59b6;--orange:#d35400;--orange2:#e67e22;
+            --text:#c8c8d8;--text2:#888899;--text3:#555566;--white:#eeeeff;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;position:relative;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(100,60,20,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(30,20,60,0.12) 0%,transparent 60%),repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.01) 2px,rgba(255,255,255,0.01) 4px);pointer-events:none;z-index:0;}
+        .container{max-width:1100px;margin:0 auto;padding:24px 20px;position:relative;z-index:1;}
+        .header{text-align:center;padding:32px 0 24px;position:relative;}
+        .header::after{content:'';display:block;width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0;}
+        .system-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:6px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;animation:blink 3s infinite;}
+        @keyframes blink{0%,90%,100%{opacity:1;}95%{opacity:0.3;}}
+        .game-title{font-family:'Cinzel',serif;font-size:clamp(36px,7vw,72px);font-weight:900;letter-spacing:12px;color:var(--gold);text-shadow:0 0 40px rgba(201,168,76,0.4),0 0 80px rgba(201,168,76,0.15);line-height:1;}
+        .player-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:300;letter-spacing:8px;color:var(--text2);margin-top:10px;text-transform:uppercase;}
+        .rank-badge{display:inline-block;margin-top:14px;padding:5px 20px;border:1px solid var(--gold);font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:var(--gold2);background:rgba(201,168,76,0.06);text-transform:uppercase;}
+        .grid-main{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+        .grid-full{grid-column:1 / -1;}
+        @media(max-width:700px){.grid-main{grid-template-columns:1fr;}.grid-full{grid-column:1;}}
+        .panel{background:var(--bg2);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;}
+        .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);}
+        .panel-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .panel-title::after{content:'';flex:1;height:1px;background:var(--border2);}
+        .stat-row{margin-bottom:18px;}.stat-row:last-child{margin-bottom:0;}
+        .stat-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+        .stat-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+        .stat-value{font-family:'Share Tech Mono',monospace;font-size:13px;}
+        .bar-track{height:6px;background:var(--bg3);border:1px solid var(--border);position:relative;overflow:hidden;}
+        .bar-fill{height:100%;position:relative;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+        .bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:3px;background:rgba(255,255,255,0.6);filter:blur(2px);}
+        .bar-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.12) 50%,transparent 100%);animation:shimmer 2.5s infinite;}
+        @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+        .bar-green{background:linear-gradient(90deg,var(--green),var(--green2));}
+        .bar-orange{background:linear-gradient(90deg,var(--orange),var(--orange2));}
+        .bar-red{background:linear-gradient(90deg,var(--red),var(--red2));animation:pulse-red 1.5s infinite;}
+        .bar-cyan{background:linear-gradient(90deg,var(--cyan),var(--cyan2));}
+        .bar-gold{background:linear-gradient(90deg,#7a5c20,var(--gold2));}
+        @keyframes pulse-red{0%,100%{opacity:1;}50%{opacity:0.6;}}
+        .stat-status{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;margin-top:4px;}
+        .lives-container{display:flex;gap:8px;align-items:center;margin-top:4px;}
+        .heart{font-size:20px;transition:all 0.3s;filter:drop-shadow(0 0 6px rgba(192,57,43,0.6));}
+        .heart.empty{filter:none;opacity:0.2;}
+        .heart-anim{animation:heartbeat 1.5s ease-in-out infinite;}
+        @keyframes heartbeat{0%,100%{transform:scale(1);}14%{transform:scale(1.15);}28%{transform:scale(1);}42%{transform:scale(1.08);}70%{transform:scale(1);}}
+        .momentum-block{text-align:center;padding:20px;background:var(--bg3);border:1px solid var(--border2);position:relative;overflow:hidden;}
+        .momentum-block::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(201,168,76,0.06) 0%,transparent 70%);}
+        .momentum-number{font-family:'Cinzel',serif;font-size:64px;font-weight:900;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(201,168,76,0.5);position:relative;}
+        .momentum-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:6px;color:var(--text3);margin-top:6px;text-transform:uppercase;}
+        .momentum-state{margin-top:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:4px;color:var(--gold2);}
+        .flames{font-size:22px;margin-top:6px;}
+        .char-stat{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+        .char-stat:last-child{border-bottom:none;}
+        .char-icon{font-size:20px;width:32px;text-align:center;}
+        .char-stat-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text2);}
+        .char-stat-desc{font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px;}
+        .char-stat-value{font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;text-align:right;white-space:nowrap;}
+        .char-stat-unit{font-size:10px;color:var(--text3);text-align:right;letter-spacing:1px;}
+        .level-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+        .level-num{font-family:'Cinzel',serif;font-size:28px;font-weight:900;color:var(--gold);}
+        .level-pct{font-family:'Share Tech Mono',monospace;font-size:24px;color:var(--text2);}
+        .level-name{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:11px;letter-spacing:5px;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
+        .progress-track{height:8px;background:var(--bg3);border:1px solid var(--border2);position:relative;margin-bottom:16px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold) 0%,var(--gold2) 100%);position:relative;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);}
+        .progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:white;filter:blur(3px);opacity:0.8;}
+        .progress-glow{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.08) 50%,transparent 100%);animation:shimmer 2.5s infinite;}
+        .objective{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+        .objective:last-child{border-bottom:none;}
+        .obj-icon{font-size:14px;margin-top:1px;flex-shrink:0;}
+        .obj-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:1px;flex:1;line-height:1.3;}
+        .obj-pct{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text3);flex-shrink:0;}
+        .obj-bar{height:3px;background:var(--bg3);margin-top:6px;}
+        .obj-bar-fill{height:100%;background:var(--gold);opacity:0.7;}
+        .obj-complete .obj-name{color:var(--green2);}
+        .obj-complete .obj-bar-fill{background:var(--green2);opacity:1;}
+        .obj-active .obj-name{color:var(--white);}
+        .obj-locked .obj-name{color:var(--text3);}
+        
+        /* Modificación para Misiones Divididas */
+        .missions-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media(max-width: 650px) { .missions-grid-layout { grid-template-columns: 1fr; } }
+        .mission-section-title { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 3px; color: var(--gold); border-bottom: 1px solid var(--border2); padding-bottom: 5px; margin-bottom: 15px; }
+        
+        .mission{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+        .mission:last-child{border-bottom:none;}
+        .mission-check{width:18px;height:18px;border:1px solid var(--border2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:11px;}
+        .mission-check.done{background:rgba(39,174,96,0.15);border-color:var(--green2);color:var(--green2);}
+        .mission-body{flex:1;}
+        .mission-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;line-height:1.3;}
+        .mission-name.done{color:var(--text3);text-decoration:line-through;text-decoration-color:var(--green2);}
+        .mission-sub{font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:3px;}
+        .mission-time{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);flex-shrink:0;margin-top:2px;}
+        
+        .wp-gauge{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg3);border:1px solid var(--border2);}
+        .wp-circle{position:relative;width:70px;height:70px;flex-shrink:0;}
+        .wp-circle svg{transform:rotate(-90deg);width:70px;height:70px;}
+        .wp-circle-bg{fill:none;stroke:var(--border2);stroke-width:5;}
+        .wp-circle-fill{fill:none;stroke:var(--gold2);stroke-width:5;stroke-linecap:butt;stroke-dasharray:189.6;stroke-dashoffset:189.6;transition:stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);filter:drop-shadow(0 0 4px rgba(232,201,106,0.6));}
+        .wp-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:var(--gold2);}
+        .wp-info{flex:1;}
+        .wp-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
+        .wp-state{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;color:var(--gold2);}
+        .wp-tasks{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);margin-top:4px;}
+        .freeze-row{display:flex;gap:8px;align-items:center;margin-top:12px;}
+        .freeze-icon{font-size:18px;opacity:0.8;}
+        .freeze-icon.empty{opacity:0.15;}
+        .freeze-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text3);margin-left:4px;}
+        .session-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);margin-bottom:16px;}
+        .session-date{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:2px;}
+        .session-online{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green2);}
+        .dot-pulse{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:dot-pulse 2s infinite;}
+        @keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+        .impulso-indicator{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;}
+        .impulso-pos{border-color:var(--green2);color:var(--green2);background:rgba(39,174,96,0.06);}
+        .impulso-neg{border-color:var(--red2);color:var(--red2);background:rgba(192,57,43,0.06);animation:pulse-red 2s infinite;}
+        .footer{text-align:center;padding:30px 0 16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--text3);}
+        .footer::before{content:'';display:block;width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 auto 20px;}
+        .divider{display:flex;align-items:center;gap:12px;margin:20px 0 16px;}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+        .divider-text{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:5px;color:var(--text3);text-transform:uppercase;white-space:nowrap;}
+        .fade-in{opacity:0;transform:translateY(12px);animation:fadeUp 0.6s ease forwards;}
+        @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+        .delay-1{animation-delay:0.1s;}.delay-2{animation-delay:0.2s;}.delay-3{animation-delay:0.3s;}.delay-4{animation-delay:0.4s;}.delay-5{animation-delay:0.5s;}.delay-6{animation-delay:0.6s;}
+    </style>
 </head>
 <body>
 <div class="container">
-  <div class="session-bar fade-in"><span class="session-date" id="current-date">SISTEMA — CARGANDO...</span><span class="session-online"><span class="dot-pulse"></span> ONLINE</span></div>
+  <div class="session-bar fade-in"><span class="session-date" id="current-date">SÁBADO 21 FEB 2026</span><span class="session-online"><span class="dot-pulse"></span> ONLINE</span></div>
   <div class="header fade-in delay-1">
     <div class="system-label">⬛ SYSTEM LINK ESTABLISHED ⬛</div>
     <div class="game-title">FORGE TRIALS</div>
-    <div class="player-name" id="player-name">GUERRERO</div>
+    <div class="player-name" id="player-name">RICARDO MIGUEL</div>
     <div class="rank-badge" id="rank-badge">⚔ APRENDIZ — PIEDRA ⚔</div>
   </div>
   <div class="grid-main">
@@ -198,12 +146,12 @@ PLANTILLA HTML COMPLETA
       <div class="panel-title">▸ barras de estado</div>
       <div class="stat-row">
         <div class="stat-header"><span class="stat-name" style="color:#e74c3c">❤ VITALIDAD</span><span class="stat-value" id="vitalidad-val" style="color:#e74c3c">$0</span></div>
-        <div class="bar-track"><div class="bar-fill bar-green" id="vitalidad-bar" style="width:70%"><div class="bar-shimmer"></div></div></div>
-        <div class="stat-status" id="vitalidad-status" style="color:#27ae60">▸ VERDE — ESTABLE</div>
+        <div class="bar-track"><div class="bar-fill bar-green" id="vitalidad-bar" style="width:0%"><div class="bar-shimmer"></div></div></div>
+        <div class="stat-status" id="vitalidad-status" style="color:#e74c3c">▸ NARANJA — CRÍTICO</div>
       </div>
       <div class="stat-row">
         <div class="stat-header"><span class="stat-name" style="color:#1abc9c">⚡ STAMINA</span><span class="stat-value" id="stamina-val" style="color:#1abc9c">0h</span></div>
-        <div class="bar-track"><div class="bar-fill bar-cyan" id="stamina-bar" style="width:50%"><div class="bar-shimmer"></div></div></div>
+        <div class="bar-track"><div class="bar-fill bar-cyan" id="stamina-bar" style="width:0%"><div class="bar-shimmer"></div></div></div>
         <div class="stat-status" id="stamina-status" style="color:#1abc9c">▸ SOLDADO</div>
       </div>
       <div class="divider"><span class="divider-text">ejecución diaria</span></div>
@@ -240,10 +188,19 @@ PLANTILLA HTML COMPLETA
       <div id="objectives-list"></div>
     </div>
     <div class="panel fade-in delay-5">
-      <div class="panel-title">▸ misiones de hoy</div>
-      <div id="missions-list"></div>
+      <div class="panel-title">▸ misiones de batalla</div>
+      <div class="missions-grid-layout">
+          <div>
+              <div class="mission-section-title">EL FRENTE DE BATALLA (DIARIAS)</div>
+              <div id="diarias-list"></div>
+          </div>
+          <div>
+              <div class="mission-section-title">EL MAPA ESTRATÉGICO (SEMANALES)</div>
+              <div id="semanales-list"></div>
+          </div>
+      </div>
     </div>
-    <div class="footer grid-full fade-in delay-6">FORGE TRIALS &nbsp;|&nbsp; BETA v2.1 &nbsp;|&nbsp; LA TRANSFORMACIÓN ES INEVITABLE</div>
+    <div class="footer grid-full fade-in delay-6">FORGE TRIALS &nbsp;|&nbsp; BETA v3.2 &nbsp;|&nbsp; LA TRANSFORMACIÓN ES INEVITABLE</div>
   </div>
 </div>
 <script>
@@ -251,25 +208,24 @@ PLANTILLA HTML COMPLETA
 // ACTUALIZA SOLO ESTE BLOQUE DATA CON LOS VALORES DEL DÍA
 // ══════════════════════════════════════════════════
 const DATA = {
-  playerName:   "GUERRERO",
-  rank:         "APRENDIZ",
-  rankSub:      "PIEDRA",
-  vitalidad:    0,
-  vitalidadMax: 1000,
-  stamina:      2,
+  playerName:   "RICARDO MIGUEL",
+  rank:         "GUERRERO",
+  rankSub:      "HIERRO",
+  vitalidad:    1250,
+  vitalidadMax: 5000,
+  stamina:      4,
   staminaMax:   6,
-  misionesHoy:  0,
-  misionesTot:  5,
-  vidas:        2,
+  misionesHoy:  2,
+  misionesTot:  3,
+  vidas:        3,
   freezes:      1,
-  momentum:     0,
-  poder:        0,
-  defensa:      0,
-  impulso:      0,
+  momentum:     18,
+  poder:        24.50,
+  defensa:      5.2,
+  impulso:      1100,
   nivel:        1,
   levelName:    "APRENDIZ → GUERRERO",
   levelPct:     0,
-  // Objetivos: array de {nombre, pct, estado: 'complete'|'active'|'locked'}
   objectives: [
     {nombre:"Arsenal Forjado en el Mercado", pct:0, estado:"locked"},
     {nombre:"Presencia en La Forja", pct:0, estado:"locked"},
@@ -277,10 +233,13 @@ const DATA = {
     {nombre:"Completar 5 Contratos con Honor", pct:0, estado:"locked"},
     {nombre:"Alcanzar Meta de Ingreso Estable", pct:0, estado:"locked"}
   ],
-  // Misiones del día: array de {nombre, sub, tiempo, done: true|false}
-  missions: [
-    {nombre:"Abrir el Sistema en la tarde", sub:"Misión ritual", tiempo:"—", done:false},
-    {nombre:"Abrir el Sistema en la noche", sub:"Misión ritual", tiempo:"—", done:false}
+  diarias: [
+    {nombre:"Mapear el Arsenal Oculto", sub:"Misión táctica", tiempo:"45m", done:true},
+    {nombre:"Abrir el Sistema en la noche", sub:"Misión ritual", tiempo:"—", done:true}
+  ],
+  semanales: [
+    {nombre:"Auditar 3 fortalezas enemigas", sub:"Investigación", tiempo:"1h", done:true},
+    {nombre:"Craftear Poción de Ahorro", sub:"Finanzas", tiempo:"30m", done:false}
   ]
 };
 // ══════════════════════════════════════════════════
@@ -358,18 +317,28 @@ objList.innerHTML='';
 DATA.objectives.forEach(obj=>{
   const icon=obj.estado==='complete'?'✅':obj.estado==='active'?'⚡':'🔒';
   const pctColor=obj.estado==='complete'?'#27ae60':obj.estado==='active'?'var(--gold2)':'var(--text3)';
-  objList.innerHTML+=`<div class="objective obj-${obj.estado}"><div class="obj-icon">${icon}</div><div style="flex:1"><div class="obj-name">${obj.nombre}</div><div class="obj-bar"><div class="obj-bar-fill" style="width:${obj.pct}%"></div></div></div><div class="obj-pct" style="color:${pctColor}">${obj.pct}%</div></div>`;
+  objList.innerHTML+=`<div class="objective obj-${obj.estado}"><div class="obj-icon">${icon}</div><div style="flex:1"><div class="obj-name">${obj.nombre}</div><div class="obj-bar"><div class="obj-bar-fill" style="width:${obj.pct}%\"></div></div></div><div class="obj-pct" style="color:${pctColor}">${obj.pct}%</div></div>`;
 });
 
-const misList=document.getElementById('missions-list');
-misList.innerHTML='';
-DATA.missions.forEach(m=>{
-  misList.innerHTML+=`<div class="mission"><div class="mission-check ${m.done?'done':''}">${m.done?'✓':''}</div><div class="mission-body"><div class="mission-name ${m.done?'done':''}">${m.nombre}</div><div class="mission-sub">${m.sub}</div></div><div class="mission-time">${m.tiempo}</div></div>`;
-});
+// Renderizado de Misiones Divididas
+const renderMissions = (list, elementId) => {
+    const container = document.getElementById(elementId);
+    container.innerHTML = '';
+    list.forEach(m => {
+        container.innerHTML += `
+            <div class="mission">
+                <div class="mission-check ${m.done?'done':''}\">${m.done?'✓':''}</div>
+                <div class="mission-body">
+                    <div class="mission-name ${m.done?'done':''}\">${m.nombre}</div>
+                    <div class="mission-sub">${m.sub}</div>
+                </div>
+                <div class="mission-time">${m.tiempo}</div>
+            </div>`;
+    });
+};
+
+renderMissions(DATA.diarias, 'diarias-list');
+renderMissions(DATA.semanales, 'semanales-list');
 </script>
 </body>
 </html>
-
-═══════════════════════════════════════════════════════════════
-FORGE TRIALS | DOC 8 — Dashboard HTML v2.1
-═══════════════════════════════════════════════════════════════
